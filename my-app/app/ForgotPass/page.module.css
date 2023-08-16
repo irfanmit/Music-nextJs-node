@@ -1,0 +1,22 @@
+/* forgot-password.module.css */
+
+/* Style for input fields */
+.inputField {
+    border-color: black;
+    /* Add any other styling properties you want */
+  }
+  
+  /* Style for error messages */
+  .errorMessage {
+    color: red;
+  }
+ .emailVerify{
+    background-color: black;
+    width: 50%;
+    height: 20vh;
+    align-items: center;
+    justify-content: center
+ }
+.emailBeingVerified{
+    background-color: black;
+}

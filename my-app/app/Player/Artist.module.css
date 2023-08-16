@@ -1,0 +1,16 @@
+.artist{
+    background-color: #2d2727;
+    height: 47vh;
+    width: 279px;
+    transition: background-color 0.3s ease; 
+}
+.artist:hover{
+    background-color: #393131;
+}
+.content{
+    top: 200px;
+    left: 75px;
+    position: absolute;
+    margin-top: 2px;
+    color: white;
+}

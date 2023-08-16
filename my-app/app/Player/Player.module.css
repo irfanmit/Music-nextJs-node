@@ -1,0 +1,85 @@
+/* playerStyles.css */
+
+.thePlayer {
+  position: relative;
+  width: 453%;
+  left: -227%;
+    height: 15vh;
+    border-radius: 10%;
+    background-color: black;
+    /* border-radius: 50%; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 20px;
+  }
+  
+  .song_info {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .controls {
+    background-color: #020202;
+    border-radius: 25%;
+    display: flex;
+    justify-content: space-around;
+    width: 17%;
+  }
+  
+  .control_button {
+    border-radius: 100%;
+    background-color: white;
+    color: black;
+    font-size: 15px;
+    padding: 10px;
+    padding: 8px 16px;
+    /* border: none; */
+    /* background-color: #007bff; */
+    color: #fff;
+    /* border-radius: 4px; */
+    cursor: pointer;
+  }
+  
+  .control_button button{
+    color: black;
+  }
+  .seekbar{
+    background-color: white;
+    height: 3px;
+    margin-bottom: 20px;
+    width: 50%;
+  }
+  .seekbar div{
+    height: 5px;
+    background-color: blue;
+    width: 13%;
+  }
+
+  .duration{
+    /* margin-top: 20px; */
+  }
+
+  
+.similar{
+  position: absolute;
+  bottom: 71%;
+  height: 47vh;
+  width: 279px;
+  color: white;
+  left: 45%;
+}
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.listItem {
+  margin-bottom: 10px; /* Add your desired spacing here */
+  /* Other styling for each list item */
+}
