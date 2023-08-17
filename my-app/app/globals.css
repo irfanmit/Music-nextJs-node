@@ -49,7 +49,7 @@ body {
 .btn{
   /* background-color: green; */
 }
-.sideBar{
+/* .sideBar{
   background-color: blue;
   width: 240px;
   height: 40vh;
@@ -68,7 +68,7 @@ body {
   position: absolute;
   top: 34%;
   left: 56%;
-}
+} */
 /* conditionalDivStyles.css */
 .conditionalDiv {
   height: 50vh;

@@ -83,3 +83,41 @@
   margin-bottom: 10px; /* Add your desired spacing here */
   /* Other styling for each list item */
 }
+
+.heart_button {
+  background-color: transparent;
+  border: 1px solid;
+  border-radius: 50%; /* To make the button circular */
+  padding: 8px;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+
+
+.heart_button:hover {
+  border-color: black;
+  color: red; /* Change text color on hover */
+}
+
+.sideBar{
+  background-color: blue;
+  width: 240px;
+  height: 40vh;
+  position: absolute;
+  left: -202%;
+  top: -168%;
+}
+.likedSongs{
+  position: absolute;
+  top: 34%;
+  left: 3%;
+  background-color: gray;
+  display: inline-block;
+}
+.addBtn{
+  position: absolute;
+  top: 34%;
+  left: 56%;
+}

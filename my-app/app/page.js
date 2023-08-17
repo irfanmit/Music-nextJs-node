@@ -79,7 +79,7 @@ const handleSearch = () => {
         alert('failed')
         // console.log(resData.errors);
       }
-      console.log(resData)
+      console.log("similar songs data "  +resData)
       setPrio(1);
       setFilePath(resData.data.musicPlayer.filePath)
       setArtist(resData.data.musicPlayer.artist)
@@ -123,12 +123,7 @@ const handlePlay = (event) =>{
         </div>
       </nav>
       {/* <audio src={'/music/dune.mp3'} controls ></audio> */}
-      <div className="sideBar">
-      <div className="likedSongs" >
-        <h6>Liked songs</h6>
-      </div>
-      <button className="addBtn">Add + </button>
-      </div>
+     
       <div>
       <div>
         <div className="theForm">
@@ -175,7 +170,7 @@ const handlePlay = (event) =>{
       <button onClick={handlePause} >pause-audio</button>
       {!inputValue && filePath && (
         <div className="audioDiv">
-          <Player artist={artist} setArtist={setArtist} setTitle={setTitle} similarSongs={similarSongs} filePath={filePath} setPrio={setPrio} prio={prio} />
+          <Player title={title} artist={artist} setArtist={setArtist} setTitle={setTitle} setSimilarSongs={setSimilarSongs} similarSongs={similarSongs} filePath={filePath} setPrio={setPrio} prio={prio} />
         </div>
       )}
     </>

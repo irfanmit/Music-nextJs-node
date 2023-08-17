@@ -1,22 +1,23 @@
 'use client'
 import React, { useState, useEffect, useRef } from "react";
 import styles from './Player.module.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import SideBar from "./SideBar";
+
 // import file from '../../'
 
-const Player = ({setArtist,setTitle,artist, similarSongs, filePath , prio, setPrio}) => {
+const Player = ({setArtist,setTitle,artist, setSimilarSongs ,similarSongs, filePath ,title, prio, setPrio}) => {
   const audioRef = useRef();
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioDuration, setAudioDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [nextFilePath, setNextFilePath] =  useState('')
   const [prevFilePath, setPrevFilePath] =  useState('')
+  const [liked, setIsLiked] = useState(false);
 
   useEffect(() => {
-    // if (prio === 5) {
-    //     setIsPlaying(true);
-    //     audioRef.current.play();
-    //   }
-    console.log(filePath);
+    console.log(liked +" == liked value");
     // Update audioDuration when the audio is loaded
     audioRef.current.addEventListener("loadeddata", () => {
       setAudioDuration(audioRef.current.duration);
@@ -30,6 +31,69 @@ const Player = ({setArtist,setTitle,artist, similarSongs, filePath , prio, setPr
     
     
   }, []);
+
+// Handle fav
+const handleFav = () => {
+  const songUrl = audioRef.current.src;
+  const likedSongPath = songUrl.split('/').slice(3).join('/');
+
+  console.log("printing current liked song " + likedSongPath);
+
+  setIsLiked(!liked);
+
+  if (!liked) {
+    console.log("inside liked query");
+
+    const graphqlQuery = {
+      query: `
+        mutation {
+          likedSong(
+            pathToLikedSong: "${likedSongPath}", artist: "${artist}", title: "${title}"
+          ){
+            likedSongArray {
+              title
+              artist
+              path
+            }
+          }
+        }
+      `
+    };
+
+    fetch('http://localhost:8080/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(graphqlQuery)
+    }).then(res => {
+      return res.json();
+    }).then(resData => {
+      if (resData.errors && resData.errors[0].status === 422) {
+        throw new Error("liked song creation failed!");
+        alert("liked song failed");
+      }
+      if (resData.errors) {
+        console.log(resData);
+        if (resData.errors[0].data[0].message) {
+          alert("error occurred while creating liked song");
+        }
+        if (resData.errors[0].data[1].message) {
+          alert("again liked song error");
+        }
+        throw new Error('liked song didnt work');
+      }
+      console.log(resData);
+      alert('Successfully liked the song');
+    }).catch(error => {
+      console.error(error);
+    });
+  } else {
+    console.log("inside liked-else query");
+  }
+};
+
+
 
   const handlePlay = (event) => {
       event.preventDefault();
@@ -229,6 +293,9 @@ const Player = ({setArtist,setTitle,artist, similarSongs, filePath , prio, setPr
 
   return (
     <>
+{/* SIDE BAR - SIDE BAR */}
+<SideBar setSimilarSongs={setSimilarSongs} />
+
      <div className={styles.similar}>
       <ul>
         {similarSongs.map((song, index) => (
@@ -249,6 +316,16 @@ const Player = ({setArtist,setTitle,artist, similarSongs, filePath , prio, setPr
         <div className={styles.seekbar} >
             <div className={styles.currentSeekbar} style={{ width: `${(currentTime / audioDuration) * 100}%` }} ></div>
         </div>
+
+{/* LIKE BUTTON */}
+
+<div className={styles.like}>
+      <button  onClick={handleFav} className={styles.heart_button}>
+        <FontAwesomeIcon icon={faHeart} className={styles.icon} />
+      </button>
+    </div>
+
+    {/* LIKE BUTTON */}
 
         <div className={styles.duration}>
             {audioDuration > 0 && (
