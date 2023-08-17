@@ -1,0 +1,113 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  background-color: white;
+  color: rgb(var(--foreground-rgb));
+  /* background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb)); */
+}
+.navbar-brand{
+  color: black;
+}
+
+
+.container{
+  display: flex;
+  color: black;
+}
+
+.theForm{
+  display: flex;
+  /* background-color: black; */
+  position: absolute;
+    left: 37%;
+    right: 37%;
+    top: 20%;
+    
+}
+
+.btn{
+  /* background-color: green; */
+}
+/* .sideBar{
+  background-color: blue;
+  width: 240px;
+  height: 40vh;
+  position: absolute;
+  left: 1%;
+  top: 30%;
+}
+.likedSongs{
+  position: absolute;
+  top: 34%;
+  left: 3%;
+  background-color: gray;
+  display: inline-block;
+}
+.addBtn{
+  position: absolute;
+  top: 34%;
+  left: 56%;
+} */
+/* conditionalDivStyles.css */
+.conditionalDiv {
+  height: 50vh;
+  width: 900px;
+  background-color: #201e1e;
+  border: 1px solid #ff4a4a;
+  padding: 10px;
+  text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 20%;
+  /* left: 120px; */
+  transform: translateY(-50%);
+}
+
+.suggestions{
+  background-color: white;
+  position: absolute;
+  z-index: 10;
+}
+.react_player{
+  position: absolute;
+    top: 30%;
+    left: 31%;
+    bottom: 50%;
+    right: 50%;
+    background-color: rgb(227, 81, 81);
+    width: 600px;
+    height: 50vh;
+}
+
+.audioDiv{
+  position: absolute;
+  top: 75%;
+  left: 50%;
+}
+
+
+.similar{
+  height: 47vh;
+  width: 279px;
+}

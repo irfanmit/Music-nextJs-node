@@ -1,0 +1,20 @@
+.sideBar{
+    background-color: blue;
+    width: 240px;
+    height: 40vh;
+    position: absolute;
+    left: -202%;
+    top: -168%;
+  }
+  .likedSongs{
+    position: absolute;
+    top: 34%;
+    left: 3%;
+    background-color: gray;
+    display: inline-block;
+  }
+  .addBtn{
+    position: absolute;
+    top: 34%;
+    left: 56%;
+  }
