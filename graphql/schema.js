@@ -3,9 +3,9 @@ const { buildSchema } = require('graphql');
 module.exports = buildSchema(`
     type User {
         _id: ID!
-        name: String!
-        email: String!
-        password: String!
+        name: String
+        email: String
+        password: String
     }
     
     input UserInputData {
@@ -28,6 +28,9 @@ module.exports = buildSchema(`
         similarSongs: [String]
     }
 
+    type LikedSongQuery {
+        likedSongArray: [String!]!
+      }
     type RootQuery {
         login(email: String!, password: String!): AuthData!
         authentication: Int
@@ -35,11 +38,21 @@ module.exports = buildSchema(`
         musicPlayer(songTitle: String!, currentType: String! ): MusicPlayer!
         nextMusicPlayer(currentType: String!) : MusicPlayer!
         prevMusicPlayer(currentType: String!) : MusicPlayer!
+        likedSongFetcher : LikedSongQuery!
     }
 
-    type RootMutation {
-        createUser(userInput: UserInputData): User!
+    type LikedSong{
+        title : String!
+        artist : String!
+        path : String!
     }
+
+    
+      
+      type RootMutation {
+        createUser(userInput: UserInputData): User!
+        likedSong(pathToLikedSong: String!, artist: String!, title: String!): User
+      } 
 
     schema {
         query: RootQuery

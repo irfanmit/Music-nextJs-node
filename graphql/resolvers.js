@@ -10,12 +10,108 @@ const musicPathArray = require('../musicPath/path')
 let lastFoundIndex = -1; 
 
 module.exports = {
+//////////////////////// LIKED - SONG - FETCHER //////////////////////
 
+likedSongFetcher: async function (_, req) {
+  try {
+    // Fetch all liked songs from the database
+    const allLikedSongs = await Song.find();
+
+    const likedSongPaths = allLikedSongs.map(likedSong => likedSong.path);
+
+    return { likedSongArray: likedSongPaths };
+  } catch (err) {
+    console.log("error occurred while fetching liked songs");
+    throw err;
+  }
+},
+
+
+////////////////////////// LIKED - SONG - HANDLE /////////////////////
+
+likedSong: async function({ pathToLikedSong, artist, title }, req) {
+  try {
+    console.log("inside liked song");
+    const existingPath = await Song.findOne({ path: pathToLikedSong });
+    if (existingPath) {
+      console.log("LIKED SONG ALREADY EXISTS");
+      const error = new Error('Liked song already exists!');
+      throw error;
+    }
+
+    const song = new Song({
+      title: title,
+      artist: artist,
+      path: pathToLikedSong,
+    });
+
+    const createdSong = await song.save();
+
+    return {
+      ...createdSong._doc,
+      _id: createdSong._id.toString(),
+    };
+  } catch (err) {
+    console.log("error occurred in liking song");
+    throw err;
+  }
+},
+
+
+
+/////////////USER-CREATION/////////////
+
+
+createUser: async function ({ userInput }, req) {
+  try {
+    const errors = [];
+
+    if (!validator.isEmail(userInput.email)) {
+      errors.push({ message: 'E-Mail is invalid.' });
+    }
+
+    if (
+      validator.isEmpty(userInput.password) ||
+      !validator.isLength(userInput.password, { min: 5 })
+    ) {
+      errors.push({ message: 'Password too short!' });
+    }
+
+    if (errors.length > 0) {
+      const error = new Error('Invalid input.');
+      error.data = errors;
+      error.code = 422;
+      throw error;
+    }
+
+    const existingUser = await User.findOne({ email: userInput.email });
+    if (existingUser) {
+      const error = new Error('User exists already!');
+      throw error;
+    }
+
+    const hashedPw = await bcrypt.hash(userInput.password, 12);
+    const user = new User({
+      email: userInput.email,
+      name: userInput.name,
+      password: hashedPw,
+    });
+
+    const createdUser = await user.save();
+    return {
+      ...createdUser._doc,
+      _id: createdUser._id.toString(),
+    };
+  } catch (err) {
+    // Handle any potential errors here
+    throw err;
+  }
+},
 //////////////////////// PREV MUSIC - PLAYER ////////////////////////
 
 prevMusicPlayer: async function ({ currentType }, req) {
   try {
-    console.log('Previous Music Player');
+    // console.log('Previous Music Player');
 
     const formattedCurrentType = currentType;
 
@@ -156,52 +252,7 @@ musicPlayer: async function ({currentType, songTitle}, req) {
 
   
 
-  /////////////USER-CREATION/////////////
-  createUser: async function ({ userInput }, req) {
-    try {
-      const errors = [];
-
-      if (!validator.isEmail(userInput.email)) {
-        errors.push({ message: 'E-Mail is invalid.' });
-      }
-
-      if (
-        validator.isEmpty(userInput.password) ||
-        !validator.isLength(userInput.password, { min: 5 })
-      ) {
-        errors.push({ message: 'Password too short!' });
-      }
-
-      if (errors.length > 0) {
-        const error = new Error('Invalid input.');
-        error.data = errors;
-        error.code = 422;
-        throw error;
-      }
-
-      const existingUser = await User.findOne({ email: userInput.email });
-      if (existingUser) {
-        const error = new Error('User exists already!');
-        throw error;
-      }
-
-      const hashedPw = await bcrypt.hash(userInput.password, 12);
-      const user = new User({
-        email: userInput.email,
-        name: userInput.name,
-        password: hashedPw,
-      });
-
-      const createdUser = await user.save();
-      return {
-        ...createdUser._doc,
-        _id: createdUser._id.toString(),
-      };
-    } catch (err) {
-      // Handle any potential errors here
-      throw err;
-    }
-  },
+  
 
   ///////////////////////LOGIN/////////////////////////
   login: async function ({ email, password }) {
