@@ -7,7 +7,7 @@ import SideBar from "./SideBar";
 
 // import file from '../../'
 
-const Player = ({setArtist,setTitle,artist, setSimilarSongs ,similarSongs, filePath ,title, prio, setPrio}) => {
+const Player = ({setArtist,setTitle,artist, setSimilarSongs ,similarSongs, filePath ,title, prio, setPrio, suggestions}) => {
   const audioRef = useRef();
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioDuration, setAudioDuration] = useState(0);
@@ -39,10 +39,7 @@ const handleFav = () => {
 
   console.log("printing current liked song " + likedSongPath);
 
-  setIsLiked(!liked);
 
-  if (!liked) {
-    console.log("inside liked query");
 
     const graphqlQuery = {
       query: `
@@ -50,11 +47,7 @@ const handleFav = () => {
           likedSong(
             pathToLikedSong: "${likedSongPath}", artist: "${artist}", title: "${title}"
           ){
-            likedSongArray {
-              title
-              artist
-              path
-            }
+            message
           }
         }
       `
@@ -88,9 +81,9 @@ const handleFav = () => {
     }).catch(error => {
       console.error(error);
     });
-  } else {
-    console.log("inside liked-else query");
-  }
+  // } else {
+  //   console.log("inside liked-else query");
+  // }
 };
 
 
@@ -294,7 +287,7 @@ const handleFav = () => {
   return (
     <>
 {/* SIDE BAR - SIDE BAR */}
-<SideBar setSimilarSongs={setSimilarSongs} />
+<SideBar suggestions={suggestions} setSimilarSongs={setSimilarSongs} />
 
      <div className={styles.similar}>
       <ul>
