@@ -10,6 +10,46 @@ const musicPathArray = require('../musicPath/path')
 let lastFoundIndex = -1; 
 
 module.exports = {
+
+/////////////////////// Add liked song ////////////////////////////
+
+  AddlikedSong: async function ({ title }) {
+    try {
+      console.log(title);
+      const formattedSongTitle = title.replace(/\s+/g, '').toLowerCase();
+    const songInArray = musicPathArray.find(song =>
+      song.title.replace(/\s+/g, '').toLowerCase() === formattedSongTitle
+    );
+
+      if (!songInArray) {
+        return {message: "We are sorry we couldn't save the requested music since we dont have it."}
+        error.code = 404;
+        throw error;
+      }
+
+      const existingSong = await Song.findOne({ title });
+
+      if (existingSong) {
+        return { message: "The song was already saved in your liked song ." };
+      }
+
+      const song = new Song({
+        title: songInArray.title,
+        artist: songInArray.artist,
+        path: songInArray.path,
+        type: songInArray.type,
+      });
+
+      const createdSong = await song.save();
+      return { message: "Song  liked and added to the database." };
+    } catch (err) {
+      console.log(err);
+      console.log("error occurred while handling liked song");
+      throw err;
+    }
+  },
+
+
 //////////////////////// LIKED - SONG - FETCHER //////////////////////
 
 likedSongFetcher: async function (_, req) {
@@ -32,13 +72,23 @@ likedSongFetcher: async function (_, req) {
 likedSong: async function({ pathToLikedSong, artist, title }, req) {
   try {
     console.log("inside liked song");
+
+    // Check if a liked song with the given path already exists
     const existingPath = await Song.findOne({ path: pathToLikedSong });
+
     if (existingPath) {
       console.log("LIKED SONG ALREADY EXISTS");
-      const error = new Error('Liked song already exists!');
-      throw error;
+
+      // Delete the existing liked song using its _id
+      await Song.findByIdAndDelete(existingPath._id);
+
+      // Return a success message or status here if needed
+      return {
+        message: "Song disliked",
+      };
     }
 
+    // If no existing liked song, then create a new one
     const song = new Song({
       title: title,
       artist: artist,
@@ -48,8 +98,7 @@ likedSong: async function({ pathToLikedSong, artist, title }, req) {
     const createdSong = await song.save();
 
     return {
-      ...createdSong._doc,
-      _id: createdSong._id.toString(),
+      message: "Song liked"
     };
   } catch (err) {
     console.log("error occurred in liking song");
