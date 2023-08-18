@@ -1,14 +1,16 @@
 'use client'
 import Image from 'next/image';
 import Head from 'next/head';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import LoginButton from './signin/LoginButton';
 import SignUp from './signup/SignUp';
 import { useRef } from 'react';
 import Player from './Player/Player';
 import Artist from './Player/Artist';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import Similar from './Player/Similar'
+// import Portal from './Portal/portal'
 
 export default function Home() {
 
@@ -24,10 +26,27 @@ export default function Home() {
   const [artist, setArtist] = useState('');
   const [title, setTitle] = useState('')
   const [similarSongs, setSimilarSongs] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+const [timer, setTimer] = useState(null);
+
+
+ useEffect(() => {
+      // Check if localStorage token is available
+      const token = localStorage.getItem('token');
+    
+      if (!token) {
+        setTimer(setTimeout(() => {
+          setIsModalOpen(true);
+        }, 300)); // 5000 milliseconds (5 seconds)
+      }
+    
+      return () => clearTimeout(timer); // Clear the timer on component unmount
+    }, []);
 
   const handleInputChange = (event) => {
     const inputValue = event.target.value;
     setInputValue(inputValue);
+
 
     // Filter suggestions based on input value
     const filtered = suggestions.filter(suggestion =>
@@ -110,9 +129,44 @@ const handlePlay = (event) =>{
     setFilteredSuggestions([]);
 
   };
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+  
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+  
 ////////////////////////////
   return (
     <>
+    {/* <Portal/> */}
+    {isModalOpen && !localStorage.getItem('token') && (
+ <Modal isOpen={isModalOpen} toggle={closeModal}>
+        <ModalHeader toggle={closeModal}>Login </ModalHeader>
+        <ModalBody>
+          <form>
+            <label>Email:</label>
+            <input
+              type="email"
+              // value={email}
+              // onChange={(e) => setEmail(e.target.value)}
+            />
+            <label>Password:</label>
+            <input
+              type="password"
+              // value={password}
+              // onChange={(e) => setPassword(e.target.value)}
+            />
+            <button type="submit">Login</button>
+          </form>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="secondary" onClick={closeModal}>Close</Button>
+        </ModalFooter>
+      </Modal>
+)}
+
        <nav className="navbar navbar-expand-lg navbar-light navbar-dark bg-dark">
         <div className="container">
           <a className="navbar-brand" href="#">Spoti-Clone</a>
@@ -170,7 +224,7 @@ const handlePlay = (event) =>{
       <button onClick={handlePause} >pause-audio</button>
       {!inputValue && filePath && (
         <div className="audioDiv">
-          <Player title={title} artist={artist} setArtist={setArtist} setTitle={setTitle} setSimilarSongs={setSimilarSongs} similarSongs={similarSongs} filePath={filePath} setPrio={setPrio} prio={prio} />
+          <Player  suggestions={suggestions} title={title} artist={artist} setArtist={setArtist} setTitle={setTitle} setSimilarSongs={setSimilarSongs} similarSongs={similarSongs} filePath={filePath} setPrio={setPrio} prio={prio} />
         </div>
       )}
     </>
