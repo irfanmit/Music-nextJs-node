@@ -94,6 +94,16 @@
   transition: background-color 0.3s, border-color 0.3s;
 }
 
+.heart_buttonRed {
+  background-color: transparent;
+  border: 1px solid;
+  border-radius: 50%; /* To make the button circular */
+  padding: 8px;
+  cursor: pointer;
+  color: rgb(237, 15, 15);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
 
 
 .heart_button:hover {

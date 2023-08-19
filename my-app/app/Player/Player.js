@@ -15,6 +15,60 @@ const Player = ({setArtist,setTitle,artist, setSimilarSongs ,similarSongs, fileP
   const [nextFilePath, setNextFilePath] =  useState('')
   const [prevFilePath, setPrevFilePath] =  useState('')
   const [liked, setIsLiked] = useState(false);
+  const [likeExist, setLikeExist] = useState(false)
+
+  useEffect(() => {
+    const songUrl = audioRef.current.src;
+    
+  const path = songUrl.split('/').slice(3).join('/');
+  console.log("path value = " + songUrl)
+      const graphqlQuery = {
+        query: `
+          query {
+            isLikedSong(
+              path: "${path}"
+            ){
+              exist
+            }
+          }
+        `
+      };
+    
+      fetch('http://localhost:8080/graphql', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(graphqlQuery)
+      }).then(res => {
+        return res.json();
+      }).then(resData => {
+        if (resData.errors && resData.errors[0].status === 422) {
+          throw new Error("liked song creation failed!");
+          alert("liked song failed");
+        }
+        if (resData.errors) {
+          console.log(resData);
+          if (resData.errors[0].data[0].message) {
+            alert("error occurred while creating liked song");
+          }
+          if (resData.errors[0].data[1].message) {
+            alert("again liked song error");
+          }
+          throw new Error('liked song didnt work');
+        }
+        console.log(resData);
+        setLikeExist(resData.data.isLikedSong.exist);
+        alert('Successfully checked the song');
+      }).catch(error => {
+        console.error(error);
+      });
+    // } else {
+    //   console.log("inside liked-else query");
+    // }
+    
+    },[liked])
+  
 
   useEffect(() => {
     console.log(liked +" == liked value");
@@ -34,6 +88,8 @@ const Player = ({setArtist,setTitle,artist, setSimilarSongs ,similarSongs, fileP
 
 // Handle fav
 const handleFav = () => {
+
+
   const songUrl = audioRef.current.src;
   const likedSongPath = songUrl.split('/').slice(3).join('/');
 
@@ -77,7 +133,10 @@ const handleFav = () => {
         throw new Error('liked song didnt work');
       }
       console.log(resData);
+      setIsLiked(true);
       alert('Successfully liked the song');
+      
+  setIsLiked(!liked)
     }).catch(error => {
       console.error(error);
     });
@@ -142,6 +201,8 @@ const handleFav = () => {
           localStorage.setItem('type', resData.data.prevMusicPlayer.type);
           setTitle(resData.data.nextMusicPlayer.title)
           setArtist(resData.data.nextMusicPlayer.artist)
+          
+    setIsLiked(!liked)
           // alert('Successfull.........prev.......fetched music data');
         })
         .catch(error => {
@@ -193,6 +254,8 @@ const handleFav = () => {
           setTitle(resData.data.nextMusicPlayer.title)
           setArtist(resData.data.nextMusicPlayer.artist)
           localStorage.setItem('type', resData.data.nextMusicPlayer.type);
+          
+    setIsLiked(!liked)
         //   alert('Successfull.........next.......fetched music data');
         })
         .catch(error => {
@@ -214,6 +277,8 @@ const handleFav = () => {
   };
 
   const managePlay = (songPath) => {
+
+    setIsLiked(!liked)
 
     if (currentSong === songPath) {
         if (isPlaying) {
@@ -313,7 +378,7 @@ const handleFav = () => {
 {/* LIKE BUTTON */}
 
 <div className={styles.like}>
-      <button  onClick={handleFav} className={styles.heart_button}>
+      <button  onClick={handleFav} className={(likeExist)? styles.heart_buttonRed : styles.heart_button}>
         <FontAwesomeIcon icon={faHeart} className={styles.icon} />
       </button>
     </div>
