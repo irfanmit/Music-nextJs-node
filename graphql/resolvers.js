@@ -11,11 +11,156 @@ let lastFoundIndex = -1;
 
 module.exports = {
 
+/////////////////////// Add liked song ////////////////////////////
+
+  AddlikedSong: async function ({ title }) {
+    try {
+      console.log(title);
+      const formattedSongTitle = title.replace(/\s+/g, '').toLowerCase();
+    const songInArray = musicPathArray.find(song =>
+      song.title.replace(/\s+/g, '').toLowerCase() === formattedSongTitle
+    );
+
+      if (!songInArray) {
+        return {message: "We are sorry we couldn't save the requested music since we dont have it."}
+        error.code = 404;
+        throw error;
+      }
+
+      const existingSong = await Song.findOne({ title });
+
+      if (existingSong) {
+        return { message: "The song was already saved in your liked song ." };
+      }
+
+      const song = new Song({
+        title: songInArray.title,
+        artist: songInArray.artist,
+        path: songInArray.path,
+        type: songInArray.type,
+      });
+
+      const createdSong = await song.save();
+      return { message: "Song  liked and added to the database." };
+    } catch (err) {
+      console.log(err);
+      console.log("error occurred while handling liked song");
+      throw err;
+    }
+  },
+
+
+//////////////////////// LIKED - SONG - FETCHER //////////////////////
+
+likedSongFetcher: async function (_, req) {
+  try {
+    // Fetch all liked songs from the database
+    const allLikedSongs = await Song.find();
+
+    const likedSongPaths = allLikedSongs.map(likedSong => likedSong.path);
+
+    return { likedSongArray: likedSongPaths };
+  } catch (err) {
+    console.log("error occurred while fetching liked songs");
+    throw err;
+  }
+},
+
+
+////////////////////////// LIKED - SONG - HANDLE /////////////////////
+
+likedSong: async function({ pathToLikedSong, artist, title }, req) {
+  try {
+    console.log("inside liked song");
+
+    // Check if a liked song with the given path already exists
+    const existingPath = await Song.findOne({ path: pathToLikedSong });
+
+    if (existingPath) {
+      console.log("LIKED SONG ALREADY EXISTS");
+
+      // Delete the existing liked song using its _id
+      await Song.findByIdAndDelete(existingPath._id);
+
+      // Return a success message or status here if needed
+      return {
+        message: "Song disliked",
+      };
+    }
+
+    // If no existing liked song, then create a new one
+    const song = new Song({
+      title: title,
+      artist: artist,
+      path: pathToLikedSong,
+    });
+
+    const createdSong = await song.save();
+
+    return {
+      message: "Song liked"
+    };
+  } catch (err) {
+    console.log("error occurred in liking song");
+    throw err;
+  }
+},
+
+
+
+/////////////USER-CREATION/////////////
+
+
+createUser: async function ({ userInput }, req) {
+  try {
+    const errors = [];
+
+    if (!validator.isEmail(userInput.email)) {
+      errors.push({ message: 'E-Mail is invalid.' });
+    }
+
+    if (
+      validator.isEmpty(userInput.password) ||
+      !validator.isLength(userInput.password, { min: 5 })
+    ) {
+      errors.push({ message: 'Password too short!' });
+    }
+
+    if (errors.length > 0) {
+      const error = new Error('Invalid input.');
+      error.data = errors;
+      error.code = 422;
+      throw error;
+    }
+
+    const existingUser = await User.findOne({ email: userInput.email });
+    if (existingUser) {
+      const error = new Error('User exists already!');
+      throw error;
+    }
+
+    const hashedPw = await bcrypt.hash(userInput.password, 12);
+    const user = new User({
+      email: userInput.email,
+      name: userInput.name,
+      password: hashedPw,
+    });
+
+    const createdUser = await user.save();
+    return {
+      ...createdUser._doc,
+      _id: createdUser._id.toString(),
+    };
+  } catch (err) {
+    // Handle any potential errors here
+    throw err;
+  }
+},
 //////////////////////// PREV MUSIC - PLAYER ////////////////////////
 
 prevMusicPlayer: async function ({ currentType }, req) {
   try {
-    console.log('Previous Music Player');
+    // console.log('Previous Music Player');
 
     const formattedCurrentType = currentType;
 
@@ -156,52 +301,7 @@ musicPlayer: async function ({currentType, songTitle}, req) {
 
   
 
-  /////////////USER-CREATION/////////////
-  createUser: async function ({ userInput }, req) {
-    try {
-      const errors = [];
-
-      if (!validator.isEmail(userInput.email)) {
-        errors.push({ message: 'E-Mail is invalid.' });
-      }
-
-      if (
-        validator.isEmpty(userInput.password) ||
-        !validator.isLength(userInput.password, { min: 5 })
-      ) {
-        errors.push({ message: 'Password too short!' });
-      }
-
-      if (errors.length > 0) {
-        const error = new Error('Invalid input.');
-        error.data = errors;
-        error.code = 422;
-        throw error;
-      }
-
-      const existingUser = await User.findOne({ email: userInput.email });
-      if (existingUser) {
-        const error = new Error('User exists already!');
-        throw error;
-      }
-
-      const hashedPw = await bcrypt.hash(userInput.password, 12);
-      const user = new User({
-        email: userInput.email,
-        name: userInput.name,
-        password: hashedPw,
-      });
-
-      const createdUser = await user.save();
-      return {
-        ...createdUser._doc,
-        _id: createdUser._id.toString(),
-      };
-    } catch (err) {
-      // Handle any potential errors here
-      throw err;
-    }
-  },
+  
 
   ///////////////////////LOGIN/////////////////////////
   login: async function ({ email, password }) {
