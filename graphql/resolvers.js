@@ -10,6 +10,59 @@ const musicPathArray = require('../musicPath/path')
 let lastFoundIndex = -1; 
 
 module.exports = {
+  /////////////////// pass word changer /////////////////////
+
+  resetPassword: async function ({ email, newPassword }) {
+    try {
+      // Find the user by email
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+      // Update the user's password in the database
+      user.password = hashedPassword;
+      await user.save();
+
+      return { message: 'Password updated successfully' };
+    } catch (error) {
+      throw new Error('Failed to reset password');
+    }
+  },
+
+
+/////////////////////// isLikedSong ////////////////////////
+
+isLikedSong : async function ({path}) {
+  try {
+    console.log("inside liked song");
+
+    // Check if a liked song with the given path already exists
+    const existingPath = await Song.findOne({ path: path });
+
+    if (existingPath) {
+
+      // Return a success message or status here if needed
+      return {
+        exist: true,
+      };
+    }
+
+    else{
+      return {
+        exist : false,
+      }
+    }
+}catch(err)
+{
+
+  throw err
+}
+},
 
 /////////////////////// Add liked song ////////////////////////////
 
@@ -150,6 +203,8 @@ createUser: async function ({ userInput }, req) {
     return {
       ...createdUser._doc,
       _id: createdUser._id.toString(),
+      name: userInput.name,
+      email : userInput.email,
     };
   } catch (err) {
     // Handle any potential errors here
@@ -249,6 +304,7 @@ nextMusicPlayer: async function ({ currentType }, req) {
 /////////////////////// M U S I C - P L A Y E R ////////////////////
 musicPlayer: async function ({currentType, songTitle}, req) {
   try {
+    let exist;
     console.log(' MUSIC PLAYER ')
     const formattedSongTitle = songTitle.replace(/\s+/g, '').toLowerCase();
     const musicPlayer = musicPathArray.find(song =>
@@ -266,13 +322,14 @@ musicPlayer: async function ({currentType, songTitle}, req) {
     .map((song) => song.path)
     .slice(0, 5); // Limit the array to 5 items
 
-// console.log(similarSongsPaths)
+console.log("similarSongsPaths")
     return {
       filePath: musicPlayer.path,
       type: musicPlayer.type,
       artist: musicPlayer.artist,
       title: musicPlayer.title,
       similarSongs: similarSongsPaths,
+      image : musicPlayer.image
     };
   } catch (err) {
     console.log('ERRRORR musicPLyaer')
@@ -292,7 +349,9 @@ musicPlayer: async function ({currentType, songTitle}, req) {
           const error = new Error('Not authenticated');
           error.code = 420;
           throw error;
+          // return {Authenticated : false}
         }
+        // return {Authenticated : true}
       } catch (err) {
         // Handle any potential errors here
         throw err;
@@ -328,6 +387,6 @@ musicPlayer: async function ({currentType, songTitle}, req) {
       { expiresIn: '1h' }
     );
 
-    return { token: token, userId: user._id.toString() };
+    return { token: token, userId: user._id.toString(), email: email };
   },
 };

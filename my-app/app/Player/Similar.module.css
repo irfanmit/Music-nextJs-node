@@ -1,0 +1,18 @@
+
+.similar{
+    position: absolute;
+    height: 47vh;
+    width: 279px;
+    color: white;
+    left: 45%;
+}
+.list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .listItem {
+    margin-bottom: 10px; /* Add your desired spacing here */
+    /* Other styling for each list item */
+  }

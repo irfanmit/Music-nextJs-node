@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
         req.isAuth = false;
         return next();
     }
-    console.log('authHeader : ' + authHeader)
+    // console.log('authHeader : ' + authHeader)
     const token = authHeader.split(' ')[1];
     // console.log('token : '+ token)
     let decodedToken;

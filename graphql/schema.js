@@ -17,7 +17,7 @@ module.exports = buildSchema(`
         type AuthData {
             token: String!
             userId: String!
-            index: Int!
+            email: String!
         }
 
         type MusicPlayer {
@@ -26,10 +26,15 @@ module.exports = buildSchema(`
             artist: String!
             title: String!
             similarSongs: [String]
+            image : String
         }
 
         type LikedSongQuery {
             likedSongArray: [String!]!
+        }
+
+        type Exist {
+            exist : Boolean!
         }
 
         type RootQuery {
@@ -40,6 +45,7 @@ module.exports = buildSchema(`
             nextMusicPlayer(currentType: String!): MusicPlayer!
             prevMusicPlayer(currentType: String!): MusicPlayer!
             likedSongFetcher: LikedSongQuery!
+            isLikedSong(path : String!) : Exist!
         }
 
         type LikedSong {
@@ -54,6 +60,7 @@ module.exports = buildSchema(`
 
         type RootMutation {
             createUser(userInput: UserInputData): User!
+            resetPassword(newPassword: String!, email: String!): Message
             likedSong(pathToLikedSong: String!, artist: String!, title: String!): Message
             AddlikedSong(title: String!): Message
         }
